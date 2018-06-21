@@ -5,7 +5,7 @@ Code to filter out the relevant images from the MPII human pose dataset
 '''
 
 import scipy.io as spio
-import matlab.enginge
+from PIL import Image
 
 #load the matlab annotations
 annotations = spio.loadmat('mpii_human_pose_v1_u12_1.mat')
@@ -22,9 +22,9 @@ for i in range(len(train_test_asignment)):
         try:
             if(annotations['RELEASE']['act'][0][0][i][0][0][0] == 'sports'):
                 # write image name into file
-                images.write("{} \n".format(annotations['RELEASE']['annolist'][0][0][0][i][0][0][0][0][0]))
+                images.write("{}\n".format(annotations['RELEASE']['annolist'][0][0][0][i][0][0][0][0][0]))
                 # write activity name into file
-                labels.write("{} \n".format(annotations['RELEASE']['act'][0][0][i][0][1][0]))
+                labels.write("{}\n".format(annotations['RELEASE']['act'][0][0][i][0][1][0]))
         except IndexError:
             # some images are marked as train images but they still have no labels
             # so just skip them
@@ -48,41 +48,42 @@ all_lables_file = open('labels.txt')
 all_lables = all_lables_file.read().splitlines()
 all_lables_file.close()
 
+
 final_images = open("final_images.txt", "w")
 final_labels = open("final_labels.txt", "w")
 # now iterate over the labels and for all those classes we want to have
 # save the image name and an int label for the class
 for i in range(len(all_lables)):
     if('basketball' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(0))
-    if('horseback riding' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(1))
-    if('martial arts' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(2))
-    if('paddleball' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(3))
-    if('rock climbing' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(4))
-    if('rope skipping' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(5))
-    if('skateboarding' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(6))
-    if('softball' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(7))
-    if('tennis' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(8))
-    if('golf' in all_lables[i]):
-        final_images.write("{} \n".format(all_images[i]))
-        final_labels.write("{} \n".format(9))
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(0))
+    elif('horseback riding' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(1))
+    elif('martial arts' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(2))
+    elif('paddleball' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(3))
+    elif('rock climbing' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(4))
+    elif('rope skipping' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(5))
+    elif('skateboarding' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(6))
+    elif('softball' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(7))
+    elif('tennis' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(8))
+    elif('golf' in all_lables[i]):
+        final_images.write("{}\n".format(all_images[i]))
+        final_labels.write("{}\n".format(9))
 
 final_labels.close()
 final_images.close()
@@ -91,4 +92,6 @@ final_images.close()
 keep_images_file = open("final_images.txt")
 keep_images = keep_images_file.read().splitlines()
 keep_images_file.close()
-print(len(keep_images))
+for i in range(len(keep_images)):
+    img = Image.open("/home/domi/Downloads/images/{}".format(keep_images[i]))
+    img.save("images/{}".format(keep_images[i]))
