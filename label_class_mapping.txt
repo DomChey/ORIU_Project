@@ -1,0 +1,10 @@
+basketball, 0
+horseback riding, 1
+martial arts, 2
+paddleball, 3
+rock climbing, 4
+rope skipping, 5
+skateboarding, 6
+softball, 7
+tennis, 8
+golf, 9
