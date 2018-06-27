@@ -6,8 +6,6 @@ Mapping from image filenames to videoframes folder
 """
 
 
-
-
 # General mapping
 import scipy.io
 import numpy as np
@@ -18,24 +16,14 @@ matVideo = scipy.io.loadmat('mpii_human_pose_v1_sequences_keyframes.mat')
 #print(matVideo['annolist_keyframes']['image'][0][2][0][0][0][0])
 
 images = []
-vididx = []
 keyframes=[]
 for i in range(24987):
-    images.append(matImage['RELEASE']['annolist'][0][0][0][i][0][0][0][0][0])
-    videoindex = matImage['RELEASE']['annolist'][0][0][0][i][3][0]
-    if len(videoindex)>0:
-        vididx.append(videoindex[0])
-    else:
-        vididx.append(None)
-        
+    images.append(matImage['RELEASE']['annolist'][0][0][0][i][0][0][0][0][0])      
     keyframes.append(matVideo['annolist_keyframes']['image'][0][i][0][0][0][0])
 
 mapping = []
-for i,idx in enumerate(vididx):
-    if idx==None:
-        continue
-    else:
-        mapping.append([images[i], keyframes[idx]])
+for i,img in enumerate(images):
+    mapping.append([img, keyframes[i]])
 mapping = np.array(mapping, dtype=object)
 
         
