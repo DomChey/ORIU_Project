@@ -51,7 +51,7 @@ class InceptionModule(nn.Module):
         self.branch_3 = nn.Sequential(
             nn.Conv2d(in_planes, n_red_5x5, kernel_size=1),
             nn.BatchNorm2d(n_red_5x5),
-            nn.ReLu(True),
+            nn.ReLU(True),
             nn.Conv2d(n_red_5x5, n_5x5, kernel_size=5, padding=1),
             nn.BatchNorm2d(n_5x5),
             nn.ReLU(True)
@@ -146,7 +146,8 @@ class GoogLeNet(nn.Module):
 
     def get_features(self, x):
         """Additional helper function to easier get the features of the
-        samples for the SVM task of the project"""
+        samples for the SVM task of the project
+        """
         out = self.first_layers(x)
         out = self.maxpool(out)
         out = self.inception_3a(out)
