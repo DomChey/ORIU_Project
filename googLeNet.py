@@ -65,17 +65,17 @@ class InceptionModule(nn.Module):
             nn.ReLU(True)
         )
 
-        def forward(self, x):
-            """Forward pass through the Inception Module
-
-            Pass the input through the different branches and then
-            concatenate the output of the branches
-            """
-            out_1 = self.branch_1(x)
-            out_2 = self.branch_2(x)
-            out_3 = self.branch_3(x)
-            out_4 = self.branch_4(x)
-            return torch.cat([out_1, out_2, out_3, out_4], 1)
+    def forward(self, x):
+        """Forward pass through the Inception Module
+        
+        Pass the input through the different branches and then
+        concatenate the output of the branches
+        """
+        out_1 = self.branch_1(x)
+        out_2 = self.branch_2(x)
+        out_3 = self.branch_3(x)
+        out_4 = self.branch_4(x)
+        return torch.cat([out_1, out_2, out_3, out_4], 1)
 
 
 # now that the Inception Module is implemented go ahead and use it for the

@@ -23,15 +23,15 @@ class SportsDataTrain(Dataset):
 
         self.transformations = transformations
         # load the images and labels
-        imagefile = open("images/train_images.txt")
+        imagefile = open("/home/domi/Development/ORIU_Project/images/train_images.txt")
         images = imagefile.read().splitlines()
         imagefile.close()
-        labelsfile = open("images/train_labels.txt")
+        labelsfile = open("/home/domi/Development/ORIU_Project/images/train_labels.txt")
         labels = labelsfile.read().splitlines()
 
         # store images and labels in xs and ya
         for i in range(len(labels)):
-            self.__xs.append("images/" + images[i])
+            self.__xs.append("/home/domi/Development/ORIU_Project/images/" + images[i])
             self.__ys.append(np.float32(labels[i]))
 
     def __getitem__(self, index):
@@ -60,15 +60,15 @@ class SportsDataTest(Dataset):
 
         self.transformations = transformations
         # load the images and labels
-        imagefile = open("images/test_images.txt")
+        imagefile = open("/home/domi/Development/ORIU_Project/images/test_images.txt")
         images = imagefile.read().splitlines()
         imagefile.close()
-        labelsfile = open("images/test_labels.txt")
+        labelsfile = open("/home/domi/Development/ORIU_Project/images/test_labels.txt")
         labels = labelsfile.read().splitlines()
 
         # store images and labels in xs and ya
         for i in range(len(labels)):
-            self.__xs.append("images/" + images[i])
+            self.__xs.append("/home/domi/Development/ORIU_Project/images/" + images[i])
             self.__ys.append(np.float32(labels[i]))
 
     def __getitem__(self, index):
@@ -87,8 +87,8 @@ class SportsDataTest(Dataset):
         return len(self.__ys)
 
 
-def get_train_and_validation_loader(batch_size, augment, random_seed,
-                                    use_cuda, valid_size=0.1, shuffle=True,):
+def get_train_and_validation_loader(batch_size, augment, use_cuda, 
+                                    random_seed=0, valid_size=0.1, shuffle=True,):
     """Useful function that loads and returns train and validation dataloader
     for the datset
 
@@ -96,7 +96,7 @@ def get_train_and_validation_loader(batch_size, augment, random_seed,
         batch_size: desired batch size
         augment: wether to apply data augmentation to the train split, will
                  not be applied to the validation split
-        random_seed; fix it for reproducability
+        random_seed; fix it for reproducability default is 0 which means he will not be fixed
         valid_size: percentage of data used for the validation set. Should be
                     a float between 0 and 1
         shuffle: whether to shuffle the train/validation indices
@@ -139,7 +139,8 @@ def get_train_and_validation_loader(batch_size, augment, random_seed,
     split_index = (np.floor(valid_size * num_train)).astype(int)
     # shuffle indices if asked for
     if shuffle:
-        np.random.seed(random_seed)
+        if random_seed != 0:
+            np.random.seed(random_seed)
         np.random.shuffle(indices)
     # now split the indices for training and validation
     train_indices = indices[split_index:]
