@@ -9,8 +9,6 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torch.utils.data.sampler import SubsetRandomSampler
-from torch.utils.data import DataLoader
-import os
 import numpy as np
 from PIL import Image
 
