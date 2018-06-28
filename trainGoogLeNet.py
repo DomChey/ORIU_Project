@@ -79,8 +79,8 @@ def validation(epoch, model, valid_loader, criterion):
             'accuracy': accuracy,
             'epoch': epoch,
         }
-    torch.save(state, 'ckpt.t7')
-    BEST_ACC = accuracy
+        torch.save(state, 'ckpt.t7')
+        BEST_ACC = accuracy
 
 
 def resume_from_checkpoint(model):
@@ -90,24 +90,25 @@ def resume_from_checkpoint(model):
     model.load_state_dict(checkpoint['model'])
     BEST_ACC = checkpoint['accuracy']
     START_EPOCH = checkpoint['epoch']
+    return model
 
 
-def train_dat_net(start_epoch):
-    model = GoogLeNet(10)
+def train_dat_net(start_epoch, model):
     model = model.to(DEVICE)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM)
     # scheduler to decrease learning rate by 4% every 8 epochs as described in the paper
     scheduler = StepLR(optimizer, step_size=8, gamma=GAMMA)
+    train_loader, valid_loader = get_train_and_validation_loader(8, False, USE_CUDA)
 
     # now start training and validation
-    for epoch in range(start_epoch, start_epoch +1):
-      # for the cross validation we need new train and validation loader every epoch so 
-      # training and validation data is freshly shuffled
-        train_loader, valid_loader = get_train_and_validation_loader(8, False, USE_CUDA)
+    for epoch in range(start_epoch, start_epoch + 30):
+        # for the cross validation we need new train and validation loader every epoch so 
+        # training and validation data is freshly shuffled
+        
         scheduler.step()
         train(epoch, model, train_loader, optimizer, criterion)
         validation(epoch, model, valid_loader, criterion)
 
-
-train_dat_net(START_EPOCH)
+model = GoogLeNet(10)
+train_dat_net(START_EPOCH, model)

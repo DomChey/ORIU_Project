@@ -122,7 +122,7 @@ class GoogLeNet(nn.Module):
         # like the first layers the last layers aren't Interception modules
         self.avgpool = nn.AvgPool2d(kernel_size=7, stride=1)
         self.dropout = nn.Dropout2d(p=0.4, inplace=True)
-        self.last_linear = nn.Linear(295936, n_classes)
+        self.last_linear = nn.Linear(1024, n_classes)
 
     def forward(self, x):
         """Forward pass through GooǵLeNet"""

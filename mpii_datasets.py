@@ -15,12 +15,11 @@ from PIL import Image
 
 class SportsDataTrain(Dataset):
     """Dataset for the trainig images"""
-    __xs = []
-    __ys = []
 
     def __init__(self, transformations):
         """Init images and labels"""
-
+        self.x = []
+        self.y = []
         self.transformations = transformations
         # load the images and labels
         imagefile = open("images/train_images.txt")
@@ -28,36 +27,36 @@ class SportsDataTrain(Dataset):
         imagefile.close()
         labelsfile = open("images/train_labels.txt")
         labels = labelsfile.read().splitlines()
+        labelsfile.close()
 
         # store images and labels in xs and ya
         for i in range(len(labels)):
-            self.__xs.append("images/" + images[i])
-            self.__ys.append(np.float32(labels[i]))
+            self.x.append("images/" + images[i])
+            self.y.append(np.float32(labels[i]))
 
     def __getitem__(self, index):
         """Override to give pytorch access to images on the dataset"""
 
         # laod the image and apply transforms
-        img = Image.open(self.__xs[index])
+        img = Image.open(self.x[index])
         img = img.convert('RGB')
         img = self.transformations(img)
         # convert label to tensor
-        label = torch.from_numpy(np.asarray(self.__ys[index])).long()
+        label = torch.from_numpy(np.asarray(self.y[index])).long()
         return img, label
 
     def __len__(self):
         """override to give pytorch the size of the dataset"""
-        return len(self.__ys)
+        return len(self.x)
 
 
 class SportsDataTest(Dataset):
     """Dataset for the testing images"""
-    __xs = []
-    __ys = []
 
     def __init__(self, transformations):
         """Init images and labels"""
-
+        self.x = []
+        self.y = []
         self.transformations = transformations
         # load the images and labels
         imagefile = open("images/test_images.txt")
@@ -65,26 +64,27 @@ class SportsDataTest(Dataset):
         imagefile.close()
         labelsfile = open("images/test_labels.txt")
         labels = labelsfile.read().splitlines()
+        labelsfile.close()
 
         # store images and labels in xs and ya
         for i in range(len(labels)):
-            self.__xs.append("images/" + images[i])
-            self.__ys.append(np.float32(labels[i]))
+            self.x.append("images/" + images[i])
+            self.y.append(np.float32(labels[i]))
 
     def __getitem__(self, index):
         """Override to give pytorch access to images on the dataset"""
 
         # laod the image and apply transforms
-        img = Image.open(self.__xs[index])
+        img = Image.open(self.x[index])
         img = img.convert('RGB')
         img = self.transformations(img)
         # convert label to tensor
-        label = torch.from_numpy(np.asarray(self.__ys[index])).long()
+        label = torch.from_numpy(np.asarray(self.y[index])).long()
         return img, label
 
     def __len__(self):
         """override to give pytorch the size of the dataset"""
-        return len(self.__ys)
+        return len(self.x)
 
 
 def get_train_and_validation_loader(batch_size, augment, use_cuda, 
@@ -105,12 +105,13 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
        train_loader: dataloader for the training set
        validation_loader: dataloader for the validation set
     """
+    resize = transforms.Resize((224, 224))
     normalize = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    crop = transforms.CenterCrop(720)
+    #crop = transforms.CenterCrop(720)
 
     # define transforms for validation and train set
     validation_transforms = transforms.Compose([
-        crop,
+        resize,
         transforms.ToTensor(),
         normalize
     ])
@@ -123,7 +124,7 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
         ])
     else:
         train_transforms = transforms.Compose([
-            crop,
+            resize,
             transforms.ToTensor(),
             normalize
         ])
@@ -172,12 +173,12 @@ def get_test_loader(batch_size, use_cuda, shuffle=True):
     Returns:
         test_loader: dataloader for the test set
     """
-
+    resize = transforms.Resize((224, 224))
     normalize = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    crop = transforms.CenterCrop(720)
+    #crop = transforms.CenterCrop(720)
     # define transforms
     transformations = transforms.Compose([
-        crop,
+        resize,
         transforms.ToTensor(),
         normalize
     ])
