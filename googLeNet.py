@@ -52,7 +52,7 @@ class InceptionModule(nn.Module):
             nn.Conv2d(in_planes, n_red_5x5, kernel_size=1),
             nn.BatchNorm2d(n_red_5x5),
             nn.ReLU(True),
-            nn.Conv2d(n_red_5x5, n_5x5, kernel_size=5, padding=1),
+            nn.Conv2d(n_red_5x5, n_5x5, kernel_size=5, padding=2),
             nn.BatchNorm2d(n_5x5),
             nn.ReLU(True)
         )
@@ -75,6 +75,7 @@ class InceptionModule(nn.Module):
         out_2 = self.branch_2(x)
         out_3 = self.branch_3(x)
         out_4 = self.branch_4(x)
+#        print(out_1.shape, out_2.shape, out_3.shape, out_4.shape)
         return torch.cat([out_1, out_2, out_3, out_4], 1)
 
 
@@ -121,28 +122,45 @@ class GoogLeNet(nn.Module):
         # like the first layers the last layers aren't Interception modules
         self.avgpool = nn.AvgPool2d(kernel_size=7, stride=1)
         self.dropout = nn.Dropout2d(p=0.4, inplace=True)
-        self.last_linear = nn.Linear(1024, n_classes)
+        self.last_linear = nn.Linear(295936, n_classes)
 
     def forward(self, x):
         """Forward pass through GooǵLeNet"""
         out = self.first_layers(x)
+#        print(out.shape)
         out = self.maxpool(out)
+#        print(out.shape)
         out = self.inception_3a(out)
+#        print(out.shape)
         out = self.inception_3b(out)
+#        print(out.shape)
         out = self.maxpool(out)
+#        print(out.shape)
         out = self.inception_4a(out)
+#        print(out.shape)
         out = self.inception_4b(out)
+#        print(out.shape)
         out = self.inception_4c(out)
+#        print(out.shape)
         out = self.inception_4d(out)
+#        print(out.shape)
         out = self.inception_4e(out)
+#        print(out.shape)
         out = self.maxpool(out)
+#        print(out.shape)
         out = self.inception_5a(out)
+#        print(out.shape)
         out = self.inception_5b(out)
+#        print(out.shape)
         out = self.avgpool(out)
+#        print(out.shape)
         out = self.dropout(out)
+#        print(out.shape)
         out = out.view(out.size(0), -1)
+#        print(out.shape)
         out = self.last_linear(out)
-        return F.softmax(out, dim=-1)
+#        print(out.shape)
+        return out
 
     def get_features(self, x):
         """Additional helper function to easier get the features of the

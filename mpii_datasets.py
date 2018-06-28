@@ -23,15 +23,15 @@ class SportsDataTrain(Dataset):
 
         self.transformations = transformations
         # load the images and labels
-        imagefile = open("/home/domi/Development/ORIU_Project/images/train_images.txt")
+        imagefile = open("images/train_images.txt")
         images = imagefile.read().splitlines()
         imagefile.close()
-        labelsfile = open("/home/domi/Development/ORIU_Project/images/train_labels.txt")
+        labelsfile = open("images/train_labels.txt")
         labels = labelsfile.read().splitlines()
 
         # store images and labels in xs and ya
         for i in range(len(labels)):
-            self.__xs.append("/home/domi/Development/ORIU_Project/images/" + images[i])
+            self.__xs.append("images/" + images[i])
             self.__ys.append(np.float32(labels[i]))
 
     def __getitem__(self, index):
@@ -42,7 +42,7 @@ class SportsDataTrain(Dataset):
         img = img.convert('RGB')
         img = self.transformations(img)
         # convert label to tensor
-        label = torch.from_numpy(np.asarray(self.__ys[index]).reshape([1, 1]))
+        label = torch.from_numpy(np.asarray(self.__ys[index]).reshape([1, 1])).long()
         return img, label
 
     def __len__(self):
@@ -60,15 +60,15 @@ class SportsDataTest(Dataset):
 
         self.transformations = transformations
         # load the images and labels
-        imagefile = open("/home/domi/Development/ORIU_Project/images/test_images.txt")
+        imagefile = open("images/test_images.txt")
         images = imagefile.read().splitlines()
         imagefile.close()
-        labelsfile = open("/home/domi/Development/ORIU_Project/images/test_labels.txt")
+        labelsfile = open("images/test_labels.txt")
         labels = labelsfile.read().splitlines()
 
         # store images and labels in xs and ya
         for i in range(len(labels)):
-            self.__xs.append("/home/domi/Development/ORIU_Project/images/" + images[i])
+            self.__xs.append("images/" + images[i])
             self.__ys.append(np.float32(labels[i]))
 
     def __getitem__(self, index):
@@ -79,7 +79,7 @@ class SportsDataTest(Dataset):
         img = img.convert('RGB')
         img = self.transformations(img)
         # convert label to tensor
-        label = torch.from_numpy(np.asarray(self.__ys[index]).reshape([1, 1]))
+        label = torch.from_numpy(np.asarray(self.__ys[index]).reshape([1, 1])).long()
         return img, label
 
     def __len__(self):
