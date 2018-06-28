@@ -93,7 +93,6 @@ def resume_from_checkpoint(model):
 
 
 def train_dat_net(start_epoch):
-    train_loader, valid_loader = get_train_and_validation_loader(8, False, USE_CUDA)
     model = GoogLeNet(10)
     model = model.to(DEVICE)
     criterion = nn.CrossEntropyLoss()
@@ -103,6 +102,9 @@ def train_dat_net(start_epoch):
 
     # now start training and validation
     for epoch in range(start_epoch, start_epoch +1):
+      # for the cross validation we need new train and validation loader every epoch so 
+      # training and validation data is freshly shuffled
+        train_loader, valid_loader = get_train_and_validation_loader(8, False, USE_CUDA)
         scheduler.step()
         train(epoch, model, train_loader, optimizer, criterion)
         validation(epoch, model, valid_loader, criterion)
