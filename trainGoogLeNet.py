@@ -24,7 +24,7 @@ LR = 0.01
 GAMMA = 0.96
 
 def train(epoch, model, train_loader, optimizer, criterion):
-    print('Trainining in Epoch: {}'.format(epoch))
+    print('Training in Epoch: {}'.format(epoch))
 
     model.train()
     train_loss = 0
@@ -35,7 +35,7 @@ def train(epoch, model, train_loader, optimizer, criterion):
         data, target = data.to(DEVICE), target.to(DEVICE)
         optimizer.zero_grad()
         prediction = model(data)
-        loss = criterion(prediction, target)
+        loss = criterion(prediction.float(), target)
         loss.backward()
         optimizer.step()
 
@@ -44,7 +44,7 @@ def train(epoch, model, train_loader, optimizer, criterion):
         total = total + target.size(0)
         correct = correct + pred.eq(target).sum().item()
 
-        print("Batch: {},| Loss: {:.2f} | Acc: {:.2f}".format(idx, (train_loss/idx),
+        print("Batch: {}| Loss: {:.2f} | Acc: {:.2f}".format(idx, (train_loss/(idx+1)),
                                                              (correct/total*100)))
 
 
@@ -60,14 +60,14 @@ def validation(epoch, model, valid_loader, criterion):
         for idx, (data, target) in enumerate(valid_loader):
             data, target = data.to(DEVICE), target.to(DEVICE)
             prediction = model(data)
-            loss = criterion(prediction, target)
+            loss = criterion(prediction.float(), target)
 
             test_loss = test_loss + loss.item()
             _, pred = prediction.max(1)
             total = total + target.size(0)
             correct = correct + pred.eq(target).sum().item()
 
-            print("Batch: {},| Loss: {:.2f} | Acc: {:.2f}".format(idx, (test_loss/idx),
+            print("Batch: {}| Loss: {:.2f} | Acc: {:.2f}".format(idx, (test_loss/(idx+1)),
                                                              (correct/total*100)))
 
     # if the model performs well, save it

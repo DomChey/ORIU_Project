@@ -42,7 +42,7 @@ class SportsDataTrain(Dataset):
         img = img.convert('RGB')
         img = self.transformations(img)
         # convert label to tensor
-        label = torch.from_numpy(np.asarray(self.__ys[index]).reshape([1, 1])).long()
+        label = torch.from_numpy(np.asarray(self.__ys[index])).long()
         return img, label
 
     def __len__(self):
@@ -79,7 +79,7 @@ class SportsDataTest(Dataset):
         img = img.convert('RGB')
         img = self.transformations(img)
         # convert label to tensor
-        label = torch.from_numpy(np.asarray(self.__ys[index]).reshape([1, 1])).long()
+        label = torch.from_numpy(np.asarray(self.__ys[index])).long()
         return img, label
 
     def __len__(self):
