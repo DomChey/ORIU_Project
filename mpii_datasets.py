@@ -94,7 +94,7 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
 
     Args:
         batch_size: desired batch size
-        augment: wether to apply data augmentation to the train split, will
+        augment: whether to apply data augmentation to the train split, will
                  not be applied to the validation split
         random_seed; fix it for reproducability default is 0 which means he will not be fixed
         valid_size: percentage of data used for the validation set. Should be
@@ -107,7 +107,7 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
     """
     resize = transforms.Resize((224, 224))
     normalize = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    #crop = transforms.CenterCrop(720)
+    randCrop = transforms.RandomCrop(224)
 
     # define transforms for validation and train set
     validation_transforms = transforms.Compose([
@@ -117,8 +117,8 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
     ])
     if augment:
         train_transforms = transforms.Compose([
-            transforms.RandomCrop(32, padding=4),
-            transforms.RandomHorizontalFlip(),
+            randCrop,
+#            transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             normalize
         ])
@@ -175,7 +175,6 @@ def get_test_loader(batch_size, use_cuda, shuffle=True):
     """
     resize = transforms.Resize((224, 224))
     normalize = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    #crop = transforms.CenterCrop(720)
     # define transforms
     transformations = transforms.Compose([
         resize,
