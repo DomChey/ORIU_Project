@@ -107,7 +107,6 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
     """
     resize = transforms.Resize((224, 224))
     normalize = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    randCrop = transforms.RandomCrop(224)
 
     # define transforms for validation and train set
     validation_transforms = transforms.Compose([
@@ -115,18 +114,19 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
         transforms.ToTensor(),
         normalize
     ])
+    # if desired apply data augmentation to the training data
     if augment:
         train_transforms = transforms.Compose([
-            randCrop,
-#            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            normalize
+            transforms.Resize(256),
+            transforms.FiveCrop(224),
+            transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
+            #normalize
         ])
     else:
         train_transforms = transforms.Compose([
             resize,
             transforms.ToTensor(),
-            normalize
+           # normalize
         ])
 
     # now load the dataset
@@ -179,7 +179,7 @@ def get_test_loader(batch_size, use_cuda, shuffle=True):
     transformations = transforms.Compose([
         resize,
         transforms.ToTensor(),
-        normalize
+       # normalize
     ])
     # load the dataset
     test_set = SportsDataTest(transformations)
