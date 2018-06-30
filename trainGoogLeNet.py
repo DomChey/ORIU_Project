@@ -129,7 +129,7 @@ def train_dat_net(start_epoch, model):
     for epoch in range(start_epoch, start_epoch + 30):
         # for the cross validation we need new train and validation loader every epoch so 
         # training and validation data is freshly shuffled
-        train_loader, valid_loader = get_train_and_validation_loader(8, augment, USE_CUDA)
+        train_loader, valid_loader = get_train_and_validation_loader(3, augment, USE_CUDA)
         scheduler.step()
         train(epoch, model, train_loader, optimizer, criterion, augment)
         validation(epoch, model, valid_loader, criterion)
