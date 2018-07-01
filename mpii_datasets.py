@@ -112,15 +112,16 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
     validation_transforms = transforms.Compose([
         resize,
         transforms.ToTensor(),
-        normalize
+#        normalize
     ])
     # if desired apply data augmentation to the training data
     if augment:
         train_transforms = transforms.Compose([
-            transforms.Resize(256),
+            transforms.Resize((256, 256)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
             transforms.FiveCrop(224),
             transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
-            #normalize
         ])
     else:
         train_transforms = transforms.Compose([
