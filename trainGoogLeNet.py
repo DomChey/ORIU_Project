@@ -63,8 +63,6 @@ def train(epoch, model, train_loader, optimizer, criterion, augmented):
         total = total + target.size(0)
         correct = correct + pred.eq(target).sum().item()
 
-#        print("Batch: {}| Loss: {:.2f} | Acc: {:.2f}".format(idx, (train_loss/(idx+1)),
-#                                                             (correct/total*100)))
     print("Loss: {:.2f} | Acc: {:.2f}".format((train_loss/len(train_loader)),
                                                              (correct/total*100)))
 
@@ -88,8 +86,6 @@ def validation(epoch, model, valid_loader, criterion):
             total = total + target.size(0)
             correct = correct + pred.eq(target).sum().item()
 
-#            print("Batch: {}| Loss: {:.2f} | Acc: {:.2f}".format(idx, (test_loss/(idx+1)),
-#                                                                (correct/total*100)))
         print("Loss: {:.2f} | Acc: {:.2f}".format((test_loss/len(valid_loader)),
                                                              (correct/total*100)))
 
