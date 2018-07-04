@@ -164,3 +164,21 @@ class GoogLeNet(nn.Module):
         out = self.inception_5b(out)
         out = self.avgpool(out)
         return out
+
+    def get_last_conv(self, x):
+        """Additional helper function to easier get the features of
+        the last conv layer for the CAM algorithm"""
+        out = self.first_layers(x)
+        out = self.maxpool(out)
+        out = self.inception_3a(out)
+        out = self.inception_3b(out)
+        out = self.maxpool(out)
+        out = self.inception_4a(out)
+        out = self.inception_4b(out)
+        out = self.inception_4c(out)
+        out = self.inception_4d(out)
+        out = self.inception_4e(out)
+        out = self.maxpool(out)
+        out = self.inception_5a(out)
+        out = self.inception_5b(out)
+        return out
