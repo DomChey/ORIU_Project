@@ -1,5 +1,5 @@
 """"
-Training and evaluation routine for our GoogLeNet
+Training, evaluation and testing routines for our GoogLeNet
 @author: Dominique Cheray
 """
 
@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.optim.lr_scheduler import StepLR
-from mpii_datasets import get_train_and_validation_loader
+from mpii_datasets import get_train_and_validation_loader, get_test_loader
 from googLeNet import GoogLeNet
 
 # define some usefull globals
@@ -124,15 +124,41 @@ def train_dat_net(start_epoch, model):
     scheduler = StepLR(optimizer, step_size=8, gamma=GAMMA)
     #whether trainig data should be augmented or not
     augment = True
-
+    train_loader, valid_loader = get_train_and_validation_loader(3, augment, USE_CUDA)
     # now start training and validation
     for epoch in range(start_epoch, start_epoch + 30):
         # for the cross validation we need new train and validation loader every epoch so 
         # training and validation data is freshly shuffled
-        train_loader, valid_loader = get_train_and_validation_loader(3, augment, USE_CUDA)
+        
         scheduler.step()
         train(epoch, model, train_loader, optimizer, criterion, augment)
         validation(epoch, model, valid_loader, criterion)
 
+
+def test_dat_net(model):
+    model.to(DEVICE)
+    model.eval()
+    test_loss = 0
+    correct = 0
+    total = 0
+
+    test_loader = get_test_loader(3, USE_CUDA)
+    criterion = nn.CrossEntropyLoss()
+
+    with torch.no_grad():
+        for idx, (data, target) in enumerate(test_loader):
+            data, target = data.to(DEVICE), target.to(DEVICE)
+            prediction = model(data)
+            loss = criterion(prediction.float(), target)
+
+            test_loss = test_loss + loss.item()
+            _, pred = prediction.max(1)
+            total = total + target.size(0)
+            correct = correct + pred.eq(target).sum().item()
+        print("Loss: {:.2f} | Acc: {:.2f}".format((test_loss/len(test_loader)),
+                                                             (correct/total*100)))
+
 model = GoogLeNet(10)
-train_dat_net(START_EPOCH, model)
+# model = resume_from_checkpoint(model)
+ train_dat_net(START_EPOCH, model)
+# test_dat_net(model)
