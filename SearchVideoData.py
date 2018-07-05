@@ -25,4 +25,4 @@ for vid in map[:,1]:
         available.append(0)
 available = np.array(available)
 
-print("{:.4f}% is available".format(np.sum(available)/available.shape[0]))
+print("{:.4f}% is available".format(100*np.sum(available)/available.shape[0]))
