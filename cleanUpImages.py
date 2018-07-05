@@ -6,6 +6,7 @@ Code to filter out the relevant images from the MPII human pose dataset
 
 import scipy.io as spio
 from PIL import Image
+from random import shuffle
 
 #load the matlab annotations
 annotations = spio.loadmat('mpii_human_pose_v1_u12_1.mat')
@@ -104,6 +105,11 @@ keep_images_file.close()
 keep_labels_file = open("final_labels.txt")
 keep_labels = keep_labels_file.read().splitlines()
 keep_labels_file.close()
+
+# shuffle the images before assigning them to train and test split
+tmp = list(zip(keep_images, keep_labels))
+shuffle(tmp)
+keep_images, keep_labels = zip(*tmp)
 
 # open files to write down the final train test splits
 train_images = open("images/train_images.txt", "w")
