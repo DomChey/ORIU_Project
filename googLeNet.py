@@ -75,7 +75,6 @@ class InceptionModule(nn.Module):
         out_2 = self.branch_2(x)
         out_3 = self.branch_3(x)
         out_4 = self.branch_4(x)
-#        print(out_1.shape, out_2.shape, out_3.shape, out_4.shape)
         return torch.cat([out_1, out_2, out_3, out_4], 1)
 
 
