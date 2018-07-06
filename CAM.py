@@ -11,6 +11,8 @@ from torchvision import transforms
 from mpii_datasets import get_train_and_validation_loader, get_test_loader
 from googLeNet import GoogLeNet
 from PIL import Image
+import numpy as np
+from matplotlib import cm
 
 
 # usefull globals
@@ -36,12 +38,12 @@ def class_activation_mapping(model, imagepath):
     ])
 
     # load the image
-    img = Image.open(imagepath)
-    img = img.convert('RGB')
-    width, height = img.size
+    orig_img = Image.open(imagepath)
+    orig_img = orig_img.convert('RGB')
+    width, height = orig_img.size
 
     # prepare it for model
-    img = transformations(img)
+    img = transformations(orig_img)
     img = img.to(DEVICE)
     img.unsqueeze_(0)
 
@@ -51,19 +53,46 @@ def class_activation_mapping(model, imagepath):
 
     # get features of last conv layer for image
     features = model.get_last_conv(img)
-    print(features.shape)
+    # and get output of model 
+    prediction = model(img)
+    # softmax to geht class prediction
+    softmax = F.softmax(prediction, dim=1)
+    # index of most likely class
+    _, idx = softmax.max(1)
+    # get the weights of the last layer
+    weights = model.last_linear.weight
+    # only keep the weights for the predicted class
+    weights = weights[idx]
 
-    # now perform average pooling to get weights for every feature
-    avg_pool = nn.AvgPool2d(kernel_size=7, stride=1)
-    weights = avg_pool(features)
-    print(weights.shape)
+    # convert to numpy
+    features = features.to(torch.device("cpu"))
+    features = features.squeeze()
+    features = features.detach().numpy()
+    weights = weights.to(torch.device("cpu"))
+    weights = weights.squeeze()
+    weights = weights.detach().numpy()
 
-    # convert to numpy and create heatmap
-    features = features.to
+    # create heatmap
+    heatmap = np.zeros((7, 7))
+    for i in range(1024):
+        heatmap = heatmap + features[i] * weights[i]
+    # normalize the heatmap
+    heatmap = heatmap / np.max(heatmap)
+    # save it as colorimage
+    cm_hot = cm.hot
+    heatmap = cm_hot(heatmap)
+    im = Image.fromarray(np.uint8(heatmap * 225))
+    im = im.resize((width, height), Image.ANTIALIAS)
+    im = im.convert('RGB')
+    im.save('test.jpg')
+
+
+def load_model(model):
+    checkpoint = torch.load('ckpt.t7')
+    model.load_state_dict(checkpoint['model'])
+    return model
 
 
 model = GoogLeNet(10)
-class_activation_mapping(model, "images/000877476.jpg")
-
-
-
+model = load_model(model)
+class_activation_mapping(model, "images/000111209.jpg")
