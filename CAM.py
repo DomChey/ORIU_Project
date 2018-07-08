@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from torchvision import transforms
 from mpii_datasets import get_train_and_validation_loader, get_test_loader
 from googLeNet import GoogLeNet
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from matplotlib import cm
 
@@ -28,8 +28,14 @@ def class_activation_mapping(model, imagepath):
 
     Args:
         model: The pretrained GoogLeNet
-        imagepaht: Path to the image for wicht to perform CAM
+        imagepath: Path to the image for wicht to perform CAM
     """
+
+    # class mapping
+    classes = ["basketball", "horseback riding", "martial arts", "paddleball", "rock climbing", "rope skipping", "skateboarding", "softball", "tennis", "golf"]
+
+    # get name of image for later use
+    name = imagepath.split("/")[1]
 
     # transforms to prepare image for the net
     transformations = transforms.Compose([
@@ -53,7 +59,7 @@ def class_activation_mapping(model, imagepath):
 
     # get features of last conv layer for image
     features = model.get_last_conv(img)
-    # and get output of model 
+    # and get output of model
     prediction = model(img)
     # softmax to geht class prediction
     softmax = F.softmax(prediction, dim=1)
@@ -65,6 +71,7 @@ def class_activation_mapping(model, imagepath):
     weights = weights[idx]
 
     # convert to numpy
+    idx = idx.cpu().numpy()[0]
     features = features.to(torch.device("cpu"))
     features = features.squeeze()
     features = features.detach().numpy()
@@ -79,12 +86,20 @@ def class_activation_mapping(model, imagepath):
     # normalize the heatmap
     heatmap = heatmap / np.max(heatmap)
     # save it as colorimage
-    cm_hot = cm.hot
-    heatmap = cm_hot(heatmap)
-    im = Image.fromarray(np.uint8(heatmap * 225))
-    im = im.resize((width, height), Image.ANTIALIAS)
-    im = im.convert('RGB')
-    im.save('test.jpg')
+    colormap = cm.nipy_spectral
+    heatmap = colormap(heatmap)
+    heatmap = Image.fromarray(np.uint8(heatmap * 225))
+    heatmap = heatmap.resize((width, height), Image.ANTIALIAS)
+    # make the heatmap transparent
+    heatmap.putalpha(128)
+    # now fuse image and heatmap together
+    orig_img.paste(heatmap, (0, 0), heatmap)
+    # write class prediction into image
+    drawable = ImageDraw.Draw(orig_img)
+    font = ImageFont.truetype('Roboto-Bold.ttf', 20)
+    drawable.text((10, 10), classes[idx], font=font, fill=(255, 255, 255))
+    # save the image
+    orig_img.save("CAMs/heatmap_{}".format(name))
 
 
 def load_model(model):
@@ -93,6 +108,14 @@ def load_model(model):
     return model
 
 
+# load the trained model
 model = GoogLeNet(10)
 model = load_model(model)
-class_activation_mapping(model, "images/000111209.jpg")
+#class_activation_mapping(model, "images/000111209.jpg")
+# get all test images
+test_images_file = open("images/test_images.txt")
+test_images = test_images_file.read().splitlines()
+test_images_file.close()
+for image in test_images:
+    imagepath = "images/" + image
+    class_activation_mapping(model, imagepath)
