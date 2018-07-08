@@ -119,6 +119,7 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
             transforms.Resize((256, 256)),
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
+            transforms.RandomRotation(180),
             transforms.FiveCrop(224),
             transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
         ])
@@ -151,20 +152,20 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
     validation_sampler = SubsetRandomSampler(valid_indices)
 
     # now create the two dataloader and give them the subsampler
-#    train_loader = DataLoader(train_set, batch_size=batch_size,
-#                              sampler=train_sampler, num_workers=1,
-#                              pin_memory=use_cuda)
-#    validation_loader = DataLoader(validation_set, batch_size=batch_size,
-#                                   sampler=validation_sampler, num_workers=1,
-#                                   pin_memory=use_cuda)
-    # WINDOWS ONLY
     train_loader = DataLoader(train_set, batch_size=batch_size,
-                              sampler=train_sampler, num_workers=0,
+                              sampler=train_sampler, num_workers=1,
                               pin_memory=use_cuda)
     validation_loader = DataLoader(validation_set, batch_size=batch_size,
-                                   sampler=validation_sampler, num_workers=0,
+                                   sampler=validation_sampler, num_workers=1,
                                    pin_memory=use_cuda)
-
+    # WINDOWS ONLY
+#    train_loader = DataLoader(train_set, batch_size=batch_size,
+#                              sampler=train_sampler, num_workers=0,
+#                              pin_memory=use_cuda)
+#    validation_loader = DataLoader(validation_set, batch_size=batch_size,
+#                                   sampler=validation_sampler, num_workers=0,
+#                                   pin_memory=use_cuda)
+#
     return train_loader, validation_loader
 
 

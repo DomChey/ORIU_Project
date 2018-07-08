@@ -156,5 +156,5 @@ def test_dat_net(model):
 
 model = GoogLeNet(10)
 # model = resume_from_checkpoint(model)
- train_dat_net(START_EPOCH, model)
+train_dat_net(START_EPOCH, model)
 # test_dat_net(model)
