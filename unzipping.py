@@ -6,7 +6,7 @@ Simple helper script for unzipping this mass of video data
 """
 import tarfile
 
-for i in range(12,16):
+for i in range(16,23):
     print(" processing F:/mpii_human_pose_v1_sequences_batch"+ str(i) + ".tar.gz")
     tar = tarfile.open("F:/mpii_human_pose_v1_sequences_batch"+ str(i) + ".tar.gz")
     tar.extractall("F:/")

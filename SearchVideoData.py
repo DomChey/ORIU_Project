@@ -15,10 +15,10 @@ for root, d, f in os.walk("F:/"):
    for name in d:
       dirs.append(name)
 
-map = np.load("VideoToImageMapping.npy")
+mapping = np.load("VideoToImageMapping.npy")
 
 available = []
-for vid in map[:,1]:
+for vid in mapping[:,1]:
     if vid[0:9] in dirs:
         available.append(1)
     else:
