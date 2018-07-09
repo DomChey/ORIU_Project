@@ -5,6 +5,9 @@ SVM algorithm for temporal analysis of the video data
 @author: Manuel
 """
 
+#TODO: SVM mit 3,5 und 7 surrounding frames 
+#       + Alle Daten einlesen!
+
 import torch
 from torch.utils.serialization import load_lua
 from torchvision import transforms
@@ -15,6 +18,7 @@ import sys
 from tqdm import tqdm
 from sklearn.svm import SVC
 
+np.random.seed(10)
 
 def prepareImage(path):
     #Function that loads an image and converts it to a useable Torch tensor:
@@ -31,7 +35,11 @@ def prepareImage(path):
     
 
 #initialize the model and training data
-model_params = torch.load('93Epo5Crop.t7')
+#CPU
+model_params = torch.load('93Epo5Crop.t7', map_location=lambda storage, loc: storage)
+#GPU
+#model_params = torch.load('93Epo5Crop.t7')
+
 model = GoogLeNet(10)
 model.load_state_dict(model_params['model'])
 
@@ -42,43 +50,59 @@ labels = np.array(labels, dtype=object)
 mapping = np.load("VideoToImageMapping.npy")
 
 #Get all features from the video frames
-X = []
-Y = []
-for i,m in enumerate(tqdm(mapping)):
-    #number of target frame
-    im_number = int(m[1][10:18])
-    
-    # Get 5 frames around target frame with 5 frames spacing
-    features = []
-    for f in np.arange(im_number-10,im_number+15, 5):
-        path = str(f)
-        path = path.rjust(8,'0')
-        path = "F:/Video Data/"+m[1][0:10] + path + ".jpg"
-        
-        try:
-            im = prepareImage(path)
-            feat = model.get_features(im).detach().numpy()[0,:,0,0]
-            features.append(feat)
-        except:
-            print("error occured", sys.exc_info()[0])
-            break
-    
-    if len(features) > 0:
-        Y.append(int(labels[i]))
-        features = np.array(features).flatten()
-        X.append(features)
-    
-#newX = []
-#newY = []
-#for i,x in enumerate(X):
-#    if len(x)>0:
-#        newX.append(x)
-#        newY.append(int(labels[i]))
+#X = []
+#Y = []
+#for i,m in enumerate(tqdm(mapping)):
+#    #number of target frame
+#    im_number = int(m[1][10:18])
+#    
+#    # Get 5 frames around target frame with 5 frames spacing
+#    features = []
+#    for f in np.arange(im_number-10,im_number+15, 5):
+#        path = str(f)
+#        path = path.rjust(8,'0')
+#        path = "F:/Video Data/"+m[1][0:10] + path + ".jpg"
 #        
-#newX, newY = np.array(newX),np.array(newY)
+#        try:
+#            im = prepareImage(path)
+#            feat = model.get_features(im).detach().numpy()[0,:,0,0]
+#            features.append(feat)
+#        except:
+#            print("error occured", sys.exc_info()[0])
+#            break
+#    
+#    if len(features) > 0:
+#        Y.append(int(labels[i]))
+#        features = np.array(features).flatten()
+#        X.append(features)
+#        
+#np.save("XData_SVM", X)
+
+#Since this procedute is very time consuming you can run the code below instead of the loop above
+X = np.load("XData_SVM.npy")
+newX = []
+newY = []
+for i,x in enumerate(X):
+    if len(x)>0:
+        newX.append(x)
+        newY.append(int(labels[i]))
+X, Y = np.array(newX),np.array(newY)
+
+
+#Train Test split at 80% with random shuffle
+dim = Y.shape[0]
+shuffle = np.random.permutation(dim)
+X = X[shuffle,:]
+Y = Y[shuffle]
+split = int(np.round(dim*0.8))
+X_train = X[0:split,:]
+Y_train = Y[0:split]
+X_test = X[split::,:]
+Y_test = Y[split::]
 
 #Train the SVM
 clf = SVC(kernel='linear')
-clf.fit(newX, newY) 
-print(clf.score(newX, newY))
+clf.fit(X_train, Y_train) 
+print("Training accuracy:", clf.score(X_train, Y_train))
+print("Test accuracy", clf.score(X_test, Y_test))
         
