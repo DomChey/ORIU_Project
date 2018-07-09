@@ -101,6 +101,8 @@ def validation(epoch, model, valid_loader, criterion):
         torch.save(state, 'ckpt.t7')
         BEST_ACC = accuracy
 
+    return accuracy
+
 
 def resume_from_checkpoint(model):
     global BEST_ACC
@@ -115,23 +117,30 @@ def resume_from_checkpoint(model):
 def train_dat_net(start_epoch, model):
     model = model.to(DEVICE)
     criterion = nn.CrossEntropyLoss()
+#    optimizer = optim.Adam(model.parameters())
     optimizer = optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM)
     # scheduler to decrease learning rate by 4% every 8 epochs as described in the paper
     scheduler = StepLR(optimizer, step_size=8, gamma=GAMMA)
-    #whether trainig data should be augmented or not
+    # whether trainig data should be augmented or not
     augment = True
-    train_loader, valid_loader = get_train_and_validation_loader(3, augment, USE_CUDA)
+    train_loader, valid_loader = get_train_and_validation_loader(5, augment, USE_CUDA)
+    val_acc = 0
     # now start training and validation
-    for epoch in range(start_epoch, start_epoch + 30):
-        # for the cross validation we need new train and validation loader every epoch so 
-        # training and validation data is freshly shuffled
-        
+    for epoch in range(start_epoch, start_epoch + 200):
         scheduler.step()
         train(epoch, model, train_loader, optimizer, criterion, augment)
-        validation(epoch, model, valid_loader, criterion)
+        val_acc = validation(epoch, model, valid_loader, criterion)
+    # save model when trainig is finished
+    state = {
+        'model': model.state_dict(),
+        'accuracy': val_acc,
+        'epoch': (START_EPOCH + 200),
+    }
+    torch.save(state, 'final.t7')
 
 
 def test_dat_net(model):
+    print("Testing")
     model.to(DEVICE)
     model.eval()
     test_loss = 0
@@ -154,7 +163,8 @@ def test_dat_net(model):
         print("Loss: {:.2f} | Acc: {:.2f}".format((test_loss/len(test_loader)),
                                                              (correct/total*100)))
 
+
 model = GoogLeNet(10)
-# model = resume_from_checkpoint(model)
+#model = resume_from_checkpoint(model)
 train_dat_net(START_EPOCH, model)
-# test_dat_net(model)
+test_dat_net(model)
