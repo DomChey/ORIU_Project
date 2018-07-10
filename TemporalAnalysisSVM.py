@@ -5,8 +5,6 @@ SVM algorithm for temporal analysis of the video data
 @author: Manuel
 """
 
-#TODO: SVM mit 3,5 und 7 surrounding frames 
-#       + Alle Daten einlesen!
 
 import torch
 from torch.utils.serialization import load_lua
@@ -36,9 +34,9 @@ def prepareImage(path):
 
 #initialize the model and training data
 #CPU
-model_params = torch.load('93Epo5Crop.t7', map_location=lambda storage, loc: storage)
+#model_params = torch.load('175Epo.t7', map_location=lambda storage, loc: storage)
 #GPU
-#model_params = torch.load('93Epo5Crop.t7')
+model_params = torch.load('175Epo.t7')
 
 model = GoogLeNet(10)
 model.load_state_dict(model_params['model'])
@@ -50,43 +48,37 @@ labels = np.array(labels, dtype=object)
 mapping = np.load("VideoToImageMapping.npy")
 
 #Get all features from the video frames
-#X = []
-#Y = []
-#for i,m in enumerate(tqdm(mapping)):
-#    #number of target frame
-#    im_number = int(m[1][10:18])
-#    
-#    # Get 5 frames around target frame with 5 frames spacing
-#    features = []
-#    for f in np.arange(im_number-10,im_number+15, 5):
-#        path = str(f)
-#        path = path.rjust(8,'0')
-#        path = "F:/Video Data/"+m[1][0:10] + path + ".jpg"
-#        
-#        try:
-#            im = prepareImage(path)
-#            feat = model.get_features(im).detach().numpy()[0,:,0,0]
-#            features.append(feat)
-#        except:
-#            print("error occured", sys.exc_info()[0])
-#            break
-#    
-#    if len(features) > 0:
-#        Y.append(int(labels[i]))
-#        features = np.array(features).flatten()
-#        X.append(features)
-#        
-#np.save("XData_SVM", X)
+X = []
+Y = []
+for i,m in enumerate(tqdm(mapping)):
+    #number of target frame
+    im_number = int(m[1][10:18])
+    
+    # Get 3, 5 or 7 frames around target frame with 5 frames spacing
+    features = []
+    for f in np.arange(im_number-15,im_number+20, 5):
+        path = str(f)
+        path = path.rjust(8,'0')
+        path = "F:/Video Data/"+m[1][0:10] + path + ".jpg"
+        
+        try:
+            im = prepareImage(path)
+            feat = model.get_features(im).detach().numpy()[0,:,0,0]
+            features.append(feat)
+        except:
+            print("error occured", sys.exc_info()[0])
+            break
+    
+    if len(features) > 0:
+        Y.append(int(labels[i]))
+        features = np.array(features).flatten()
+        X.append(features)
+        
+X, Y = np.array(X),np.array(Y)
+np.save("XData_SVM_7frames", X)
 
-#Since this procedute is very time consuming you can run the code below instead of the loop above
-X = np.load("XData_SVM.npy")
-newX = []
-newY = []
-for i,x in enumerate(X):
-    if len(x)>0:
-        newX.append(x)
-        newY.append(int(labels[i]))
-X, Y = np.array(newX),np.array(newY)
+#Since this procedute is very time consuming you can run the line below instead of the loop above
+#X = np.load("XData_SVM.npy")
 
 
 #Train Test split at 80% with random shuffle
