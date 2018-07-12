@@ -4,8 +4,7 @@ SVM algorithm for temporal analysis of the video data
 
 @author: Manuel
 """
-
-#TODO: Test Daten extra einlesen und evaluieren
+# TODO: 9 frame SVM nochmal machen mit weniger Abstand (5 frames Abstand ist zu groß)
 
 import torch
 from torch.utils.serialization import load_lua
@@ -55,12 +54,12 @@ mapping = np.load("VideoToImageMapping.npy")
 #    #number of target frame
 #    im_number = int(m[1][10:18])
 #    
-#    # Get 3, 5 or 7 frames around target frame with 5 frames spacing
+#    # Get 3, 5, 7 or 9 frames around target frame with 5 (4) frames spacing
 #    features = []
-#    for f in np.arange(im_number-15,im_number+20, 5):
+#    for f in np.arange(im_number-16,im_number+20, 4):
 #        path = str(f)
 #        path = path.rjust(8,'0')
-#        path = "F:/Video Data/"+m[1][0:10] + path + ".jpg"
+#        path = "E:/Video Data/"+m[1][0:10] + path + ".jpg"
 #        
 #        try:
 #            im = prepareImage(path)
@@ -76,26 +75,41 @@ mapping = np.load("VideoToImageMapping.npy")
 #        X.append(features)
 #        
 #X, Y = np.array(X),np.array(Y)
-#np.save("XData_SVM_7frames", X)
+#np.save("XData_SVM_9frames", X)
 
 #Since this procedute is very time consuming you can run the line below instead of the loop above
 #There a three pre-processed arrays:
 #XData_SVM_3frames.npy : 3 frames around target frame with 5 frames spacing
 #XData_SVM_5frames.npy : 5 frames around target frame with 5 frames spacing
 #XData_SVM_7frames.npy : 7 frames around target frame with 5 frames spacing
-X = np.load("XData_SVM_7frames.npy")
+#XData_SVM_9frames.npy : 9 frames around target frame with 4 frames spacing
+X = np.load("XData_SVM_9frames.npy")
 Y = labels
 
-#Train Test split at 80% with random shuffle
-dim = Y.shape[0]
-shuffle = np.random.permutation(dim)
-X = X[shuffle,:]
-Y = Y[shuffle]
-split = int(np.round(dim*0.8))
-X_train = X[0:split,:]
-Y_train = Y[0:split]
-X_test = X[split::,:]
-Y_test = Y[split::]
+#Train Test split as used with the Neural Net
+file = open("images/test_images.txt", "r") 
+test_im = file.read().splitlines()
+test_im = np.array(test_im, dtype=object)
+
+file = open("images/train_images.txt", "r") 
+train_im = file.read().splitlines()
+train_im = np.array(train_im, dtype=object)
+
+mask_test = []
+mask_train = []
+
+for im in train_im:
+    idx = np.where(im==mapping[:,0])[0][0]
+    mask_train.append(idx)
+    
+for im in test_im:
+    idx = np.where(im==mapping[:,0])[0][0]
+    mask_test.append(idx)
+        
+X_train = X[mask_train,:]
+Y_train = Y[mask_train]
+X_test = X[mask_test,:]
+Y_test = Y[mask_test]
 
 #Train the SVM
 clf = SVC(kernel='linear')
