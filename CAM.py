@@ -5,10 +5,8 @@ Implementation of Class Activatoin Mapping
 
 # necessary imports
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
-from mpii_datasets import get_train_and_validation_loader, get_test_loader
 from googLeNet import GoogLeNet
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
@@ -28,7 +26,7 @@ def class_activation_mapping(model, imagepath):
 
     Args:
         model: The pretrained GoogLeNet
-        imagepath: Path to the image for wicht to perform CAM
+        imagepath: Path to the image on wich to perform CAM
     """
 
     # class mapping
@@ -102,20 +100,25 @@ def class_activation_mapping(model, imagepath):
     orig_img.save("CAMs/heatmap_{}".format(name))
 
 
-def load_model(model):
-    checkpoint = torch.load('ckpt.t7')
+def load_model(model, checkpoint):
+    """
+    Method to load a pretrained network
+
+    Args:
+       model: Network to add the loaded parameters to"""
+    checkpoint = torch.load(checkpoint)
     model.load_state_dict(checkpoint['model'])
     return model
 
 
 # load the trained model
 model = GoogLeNet(10)
-model = load_model(model)
-#class_activation_mapping(model, "images/000111209.jpg")
+model = load_model(model, '175Epo.t7')
 # get all test images
 test_images_file = open("images/test_images.txt")
 test_images = test_images_file.read().splitlines()
 test_images_file.close()
+# create a CAM image for all test images
 for image in test_images:
     imagepath = "images/" + image
     class_activation_mapping(model, imagepath)
