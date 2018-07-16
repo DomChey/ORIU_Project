@@ -40,7 +40,7 @@ def train(epoch, model, train_loader, optimizer, criterion, augmented, log):
     """
 
     print('Training in Epoch: {}'.format(epoch))
-    log.write('Training in Epoch: {}'.format(epoch))
+    log.write('Training in Epoch: {}\n'.format(epoch))
 
     model.train()
     train_loss = 0
@@ -70,7 +70,7 @@ def train(epoch, model, train_loader, optimizer, criterion, augmented, log):
 
     print("Loss: {:.2f} | Acc: {:.2f}".format((train_loss/len(train_loader)),
                                                              (correct/total*100)))
-    log.write("Loss: {:.2f} | Acc: {:.2f}".format((train_loss/len(train_loader)),
+    log.write("Loss: {:.2f} | Acc: {:.2f}\n".format((train_loss/len(train_loader)),
                                                              (correct/total*100)))
 
 
@@ -87,7 +87,7 @@ def validation(epoch, model, valid_loader, criterion, log):
     """
 
     print('Validation in Epoch {}'.format(epoch))
-    log.write('Validation in Epoch {}'.format(epoch))
+    log.write('Validation in Epoch {}\n'.format(epoch))
     global BEST_ACC
     model.eval()
     test_loss = 0
@@ -107,7 +107,7 @@ def validation(epoch, model, valid_loader, criterion, log):
 
         print("Loss: {:.2f} | Acc: {:.2f}".format((test_loss/len(valid_loader)),
                                                              (correct/total*100)))
-        log.write("Loss: {:.2f} | Acc: {:.2f}".format((test_loss/len(valid_loader)),
+        log.write("Loss: {:.2f} | Acc: {:.2f}\n".format((test_loss/len(valid_loader)),
                                                              (correct/total*100)))
 
     # if the model performs well, save it
@@ -152,7 +152,6 @@ def train_dat_net(start_epoch, model):
 
     model = model.to(DEVICE)
     criterion = nn.CrossEntropyLoss()
-#    optimizer = optim.Adam(model.parameters())
     optimizer = optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM)
     # scheduler to decrease learning rate by 4% every 8 epochs as described in the paper
     scheduler = StepLR(optimizer, step_size=8, gamma=GAMMA)
