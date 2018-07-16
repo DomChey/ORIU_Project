@@ -8,18 +8,17 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
+from torchvision.models import resnet
 from mpii_datasets import get_train_and_validation_loader, get_test_loader
 from googLeNet import GoogLeNet
 
 # define some usefull globals
 USE_CUDA = torch.cuda.is_available()
 DEVICE = 'cuda' if USE_CUDA else 'cpu'
-
 # best validation accuracy
 BEST_ACC = 0
 # start from 0 or last checkpoint epoch
 START_EPOCH = 0
-
 MOMENTUM = 0.9
 LR = 0.01
 GAMMA = 0.96
@@ -183,7 +182,7 @@ def test_dat_net(model, log):
     correct = 0
     total = 0
 
-    test_loader = get_test_loader(3, USE_CUDA)
+    test_loader = get_test_loader(5, USE_CUDA)
     criterion = nn.CrossEntropyLoss()
 
     with torch.no_grad():
@@ -200,7 +199,8 @@ def test_dat_net(model, log):
                                                              (correct/total*100)))
 
 
-model = GoogLeNet(10)
-#model = resume_from_checkpoint(model, ckpt.7)
+#model = GoogLeNet(10)
+#model = resume_from_checkpoint(model, GoogLeNet.t7)
+model = resnet.resnet34(pretrained=False, num_classes=10)
 train_dat_net(START_EPOCH, model)
 test_dat_net(model)

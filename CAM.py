@@ -7,6 +7,7 @@ Implementation of Class Activatoin Mapping
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
+from torchvision.models import resnet
 from googLeNet import GoogLeNet
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
@@ -18,7 +19,7 @@ USE_CUDA = torch.cuda.is_available()
 DEVICE = 'cuda' if USE_CUDA else 'cpu'
 
 
-def class_activation_mapping(model, imagepath):
+def class_activation_mapping(model, imagepath, isGoogLeNet):
     """
     Class Activation Mapping is a technique to expose the  implicit attention
     of CNNs on the image. It highlights the most informative regions relevant
@@ -27,6 +28,8 @@ def class_activation_mapping(model, imagepath):
     Args:
         model: The pretrained GoogLeNet
         imagepath: Path to the image on wich to perform CAM
+        isGoogLeNet: If the given model is our implementation of the GoogLeNet or not
+
     """
 
     # class mapping
@@ -56,15 +59,28 @@ def class_activation_mapping(model, imagepath):
     model.to(DEVICE)
 
     # get features of last conv layer for image
-    features = model.get_last_conv(img)
+    if isGoogLeNet:
+        features = model.get_last_conv(img)
+    else:
+        layer = model._modules.get('layer4')
+        features = torch.zeros(1, 512, 7, 7)
+        def copy_features(model, i, o):
+            features.copy_(o.data)
+        hook = layer.register_forward_hook(copy_features)
+
     # and get output of model
     prediction = model(img)
+    if not isGoogLeNet:
+        hook.remove()
     # softmax to geht class prediction
     softmax = F.softmax(prediction, dim=1)
     # index of most likely class
     _, idx = softmax.max(1)
     # get the weights of the last layer
-    weights = model.last_linear.weight
+    if isGoogLeNet:
+        weights = model.last_linear.weight
+    else:
+        weights = model.fc.weight
     # only keep the weights for the predicted class
     weights = weights[idx]
 
@@ -79,12 +95,16 @@ def class_activation_mapping(model, imagepath):
 
     # create heatmap
     heatmap = np.zeros((7, 7))
-    for i in range(1024):
-        heatmap = heatmap + features[i] * weights[i]
+    if isGoogLeNet:
+        for i in range(1024):
+            heatmap = heatmap + features[i] * weights[i]
+    else:
+        for i in range(512):
+            heatmap = heatmap + features[i] * weights[i]
     # normalize the heatmap
     heatmap = heatmap / np.max(heatmap)
     # save it as colorimage
-    colormap = cm.nipy_spectral
+    colormap = cm.hot
     heatmap = colormap(heatmap)
     heatmap = Image.fromarray(np.uint8(heatmap * 225))
     heatmap = heatmap.resize((width, height), Image.ANTIALIAS)
@@ -113,7 +133,8 @@ def load_model(model, checkpoint):
 
 # load the trained model
 model = GoogLeNet(10)
-model = load_model(model, '175Epo.t7')
+#model = resnet.resnet34(pretrained=False, num_classes=10)
+model = load_model(model, 'GoogLeNet.t7')
 # get all test images
 test_images_file = open("images/test_images.txt")
 test_images = test_images_file.read().splitlines()
@@ -121,4 +142,4 @@ test_images_file.close()
 # create a CAM image for all test images
 for image in test_images:
     imagepath = "images/" + image
-    class_activation_mapping(model, imagepath)
+    class_activation_mapping(model, imagepath, True)
