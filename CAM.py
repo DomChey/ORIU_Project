@@ -109,7 +109,7 @@ def class_activation_mapping(model, imagepath, isGoogLeNet):
     heatmap = Image.fromarray(np.uint8(heatmap * 225))
     heatmap = heatmap.resize((width, height), Image.ANTIALIAS)
     # make the heatmap transparent
-    heatmap.putalpha(128)
+    heatmap.putalpha(200)
     # now fuse image and heatmap together
     orig_img.paste(heatmap, (0, 0), heatmap)
     # write class prediction into image
