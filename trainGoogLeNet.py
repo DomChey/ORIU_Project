@@ -167,7 +167,7 @@ def train_dat_net(start_epoch, model):
     log.close()
 
 
-def test_dat_net(model, log):
+def test_dat_net(model):
     """
     Test method for our GoogLeNet
 
