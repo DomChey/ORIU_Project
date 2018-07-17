@@ -199,8 +199,8 @@ def test_dat_net(model):
                                                              (correct/total*100)))
 
 
-#model = GoogLeNet(10)
+model = GoogLeNet(10)
+#model = resnet.resnet34(pretrained=False, num_classes=10)
 #model = resume_from_checkpoint(model, GoogLeNet.t7)
-model = resnet.resnet34(pretrained=False, num_classes=10)
 train_dat_net(START_EPOCH, model)
 test_dat_net(model)

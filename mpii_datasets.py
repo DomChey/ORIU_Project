@@ -106,12 +106,10 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
        validation_loader: dataloader for the validation set
     """
     resize = transforms.Resize((224, 224))
-
     # define transforms for validation and train set
     validation_transforms = transforms.Compose([
         resize,
-        transforms.ToTensor(),
-#        normalize
+        transforms.ToTensor()
     ])
     # if desired apply data augmentation to the training data
     if augment:
@@ -126,7 +124,7 @@ def get_train_and_validation_loader(batch_size, augment, use_cuda,
     else:
         train_transforms = transforms.Compose([
             resize,
-            transforms.ToTensor(),
+            transforms.ToTensor()
         ])
 
     # now load the dataset
@@ -184,7 +182,7 @@ def get_test_loader(batch_size, use_cuda, shuffle=True):
     # define transforms
     transformations = transforms.Compose([
         resize,
-        transforms.ToTensor(),
+        transforms.ToTensor()
     ])
     # load the dataset
     test_set = SportsDataTest(transformations)
