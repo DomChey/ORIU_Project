@@ -6,14 +6,8 @@ Simple script for plotting an iamge grid
 """
 
 from PIL import Image
-import torch
 import numpy as np
-from torch.autograd import Variable
-from torch.utils.data import Dataset, DataLoader
 
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 import matplotlib.pyplot as plt
 
 
@@ -72,6 +66,17 @@ def plotgrid(X, n):
 
     plt.show()
     
-X = X[np.random.permutation(1576),:,:,:]
+choice = np.random.permutation(1576)
+X = X[choice,:,:,:]
+label = label[choice]
+    
+grid = np.ones((100,1,128,128))
 
-plotgrid(X,20)
+for i,k in enumerate(range(10)):
+    images = X[label==k,:,:,:]
+    grid[i*10:(i+1)*10,:,:,:] = images[0:10,:,:,:]
+
+plotgrid(grid,10)
+
+
+

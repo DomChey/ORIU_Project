@@ -4,7 +4,7 @@ SVM algorithm for temporal analysis of the video data
 
 @author: Manuel
 """
-# TODO: 9 frame SVM nochmal machen mit weniger Abstand (5 frames Abstand ist zu groß)
+
 
 import torch
 from torch.utils.serialization import load_lua
