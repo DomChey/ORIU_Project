@@ -1,0 +1,18 @@
+@comment{x-kbibtex-personnameformatting=<%l><, %f>}
+
+@inproceedings{andriluka20142d,
+	author = "Andriluka, Mykhaylo and Pishchulin, Leonid and Gehler, Peter and Schiele, Bernt",
+	booktitle = "{Proceedings of the IEEE Conference on computer Vision and Pattern Recognition}",
+	pages = "3686--3693",
+	title = "{2d human pose estimation: New benchmark and state of the art analysis}",
+	year = "2014"
+}
+
+@inproceedings{he2016deep,
+	author = "He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian",
+	booktitle = "{Proceedings of the IEEE conference on computer vision and pattern recognition}",
+	pages = "770--778",
+	title = "{Deep residual learning for image recognition}",
+	year = "2016"
+}
+
