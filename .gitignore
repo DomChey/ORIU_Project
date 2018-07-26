@@ -7,3 +7,5 @@ Report/auto/
 *.pdf
 *.gz
 *.toc
+*.bbl
+*.blg
