@@ -8,7 +8,8 @@
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage[square,sort,comma,numbers]{natbib}
-\bibliographystyle{abbrv} 
+\bibliographystyle{abbrv}
+\usepackage[font=small,labelfont=bf]{caption}
 
 % Title Page
 \title{\textbf{Sports Classification - Temporal vs. Static}}
@@ -19,13 +20,127 @@
 \begin{document}
 \maketitle
 
+\tableofcontents
+ 
 \chapter{Introduction}
 
 \chapter{Fundamentals}
 \section{GoogLeNet}
 \subsubsection{by Dominique Cheray}
+GoogLeNet is a deep convolutional neural network first presented in 2014 and
+winner of the ImageNet Large-Scale Visual Recognition Challenge of the same
+year. The main building block of this network are the Inception modules which
+reduce the number of parameters and at the same time create a deeper and wider
+topology. \\
+Increasing the size of a deep neural network is the most straightforward way to
+improve its performance. This includes increasing the depth of the network, i.e.
+the number of levels and the width of the network, i.e. the number of units at
+each level. However this approach has two major drawbacks: a bigger size of the
+network usually means more parameters, making the network more prone to
+overfitting. Furthermore increasing the size of the network also drastically
+increases the use of computational resources. To fundamentally solve these
+problems, one would have to switch from fully connected to sparsely connected
+architectures. However, today's computing infrastructures are very inefficient
+when it comes to numerical calculation on non-uniform sparse data structures.
+Therefore the main idea of the Inception modules is based on approximating and covering an
+optimal local sparse structure in a convolutional network by readily available dense
+components. \cite{szegedy2015going} So the authors aim to find the optimal local
+construction and to repeat it spatially. \\
+They argue that an optimal layered network topology can be constructed by analyzing the
+correlation statistics of the preceding layers and clustering units with highly
+correlated outputs. In lower layers correlations would concentrate in local and
+near-local regions and can therefore be covered by 1x1 convolutions.
+Additionally, a smaller number of spatially spread-out clusters can be covered
+by convolution over larger patches, i.e. 3x3 an 5x5. The final architecture is a
+combination of all those layers with their outputs concatenated into a single
+vector which is then used as input to the next layer. Additionally an
+alternative pooling path is added since pooling operations have been essential
+for the success in convolutional networks. \cite{szegedy2015going} To avoid
+computational blow up dimension reduction is applied wherever the computational
+requirements would increase too much otherwise. Therefore inexpensive 1x1
+convolutions are used to compute reductions before the expensive 3x3 and 5x5
+convolutions. The 1x1 convolutions also include a ReLU activation making them
+dual-purpose. Figure \ref{InceptionModule} shows the structure of an Inception
+module. \\
+For the final layout of the network several Inception modules are stacked
+upon each other. To decimate the resolution of the grid max-pooling layers are
+inserted occasionally.For reasons of memory efficiency lower layers are kept in
+traditional convolutional fashion end the Inception modules are only used at
+higher levels. This stacking allows for tweaking each module without
+uncontrolled blow up in computational complexity. The network ends with global
+average pooling followed by dropout and a fully connected layer with softmax for the
+classification. The network is 27 layers deep and the overall number of layers
+used for its construction is about 100.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{InceptionModule}
+  \caption{Inception module with dimension reduction (taken from \cite{szegedy2015going})}
+  \label{InceptionModule}
+\end{figure}
 
-\tableofcontents
+\section{ResNet}
+\subsubsection{by Dominique Cheray}
+Residual Networks were first presented in 2015 and winner of the ImageNet
+Large-Scale Visual Recognition Challenge of the same year. The core idea of
+ResNet is the introduction of so-called identity shortcut connections that skip
+one or more layers, as shown in figure \ref{ResidualBlock}. A residual block has
+two options: either perform a set of functions on the input or skip this step
+altogether. \\
+The depth of a neural network is of crucial importance for its performance.
+However, increasing network depth does not work by simply
+stacking layers together. With increasing network depth the accuracy gets saturated
+and eventually degrades rapidly and therefore adding more layers to a suitably
+deep model leads to higher training error. \cite{he2016deep}
+The authors of \cite{he2016deep} argue that stacking layers shouldn't degrade the networks
+performance, because one could simply stack identity mappings upon the current
+network and the resulting architecture would perform the same. This indicates
+that the deeper model should not produce a higher training error than its
+shallower counterpart. But optimizing deep networks is difficult and current
+solvers cannot find the solution. Therefore they propose a deep residual
+learning framework. Instead of hoping each few stacked layers directly fit a
+desired underlying mapping they explicitly let these layers fit a residual
+mapping. The authors hypothesize that letting the stacked layers fit this
+residual mapping is easier than letting them directly fit the desired underlying
+mapping. \\
+Similar to GoogLeNet several of the residual blocks are stacked upon each other
+to construct the final network. It ends with a global average pooling layer
+followed by fully connected layer with softmax for the classification. 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.4\textwidth]{ResidualBlock}
+  \caption{Residual block (taken from \cite{he2016deep})}
+  \label{ResidualBlock}
+\end{figure}
+
+\section {Class Activation Mapping}
+\subsubsection{by Dominique Cheray}
+Class Activation Mapping (CAM) is a technique to expose the implicit attention
+of Convolutional Neural Networks (CNN) on an image. It highlights the most
+informative regions relevant the predicted class. \cite{zhou2016learning} For a
+CNN to be used for CAM, its architecture must meet certain requirements. Its
+last convolutional layer has to be followed by a layer that performs global
+average pooling (GAP) on the convolutional feature maps. The output of the GAP
+is then used as features for a fully connected layer that produces the desired
+output (categorical or otherwise). \\
+The GAP outputs the average of each feature map at the last convolutional layer
+and in the fully connected layer a weighted sum of these values is used to
+generate the final output. To generate the CAM one now takes the weights of the
+fully connected layer belonging to the desired class and the feature maps of the
+last convolutional layer and multiplies each feature map by its associated
+weight. The weighted feature maps are then added up and upsampled to the size of
+the original image. In the resulting image one can identify the image regions
+most important to the particular class. Figure \ref{SchematicCAM} shows a
+schematic overview of the procedure for generating the class activation maps.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.9\textwidth]{CAM_graphik}
+  \caption{Schematic overview of the procedure for generating the class activation maps (taken from
+    \cite{zhou2016learning})}
+  \label{SchematicCAM}
+\end{figure}
+
+\section{Data Set}
+\subsubsection{by Dominique Cheray}
 
 
 \bibliography{literature}

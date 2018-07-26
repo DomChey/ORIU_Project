@@ -1,1 +1,9 @@
 __pycache__
+*.aux
+*.bib~
+Report/auto/
+*.log
+*.out
+*.pdf
+*.gz
+*.toc
