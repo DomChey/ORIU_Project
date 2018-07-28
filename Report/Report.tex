@@ -168,6 +168,24 @@ data set.
 
 \chapter{Methods}
 \section{Classification with the Networks}
+\subsubsection{by Dominique Cheray}
+For the training and testing of the GoogLeNet and the ResNet we randomly
+assign 20 \% of the images of each class to the test set and the remaining
+images to the training set. Our training set therefore consists of 1266 images
+and our test set of 310 images. We train and validate the networks with the
+training set and keep the test set for the final testing of the performance
+of the networks. \\
+Due to the rather small size of our data set we use Data Augmentation to
+artificially inflate our data set and avoid overfitting of the networks on the
+training data. According to the results of \cite{taylor2017imporving} we apply
+a combination of geometric augmentation and cropping since the authors could
+show that applying these two methods improved the performance of CNNs
+the most. We therefore first resize the training images to 256x256 pixels and
+then apply a random transformation to it (either a flip or a rotation).
+Afterwards we extract five 224x224 crops from the transformed image, one crop
+out of every corner of the image and one out of the center of the image. Later
+during training the prediction of the network is averaged over these five crops
+to get one prediction for the underlying original image. \\
 
 
 \bibliography{literature}
