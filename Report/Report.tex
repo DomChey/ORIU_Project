@@ -39,7 +39,7 @@ Finally we want to compare this static approach against a dynamic (temporal) app
 \subsubsection{by Dominique Cheray}
 GoogLeNet is a deep convolutional neural network first presented in 2014 and
 winner of the ImageNet Large-Scale Visual Recognition Challenge of the same
-year. The main building block of this network are the Inception modules which
+year. The main building blocks of this network are the Inception modules which
 reduce the number of parameters and at the same time create a deeper and wider
 topology. \\
 Increasing the size of a deep neural network is the most straightforward way to
@@ -66,10 +66,10 @@ combination of all those layers with their outputs concatenated into a single
 vector which is then used as input to the next layer. Additionally an
 alternative pooling path is added since pooling operations have been essential
 for the success in convolutional networks \cite{szegedy2015going}. To avoid
-computational blow up dimension reduction is applied wherever the computational
+computational blow up, dimension reduction is applied wherever the computational
 requirements would increase too much otherwise. Therefore inexpensive 1x1
 convolutions are used to compute reductions before the expensive 3x3 and 5x5
-convolutions. The 1x1 convolutions also include a ReLU activation making them
+convolutions. The 1x1 convolutions also include a ReLU activation, making them
 dual-purpose. Figure \ref{InceptionModule} shows the structure of an Inception
 module. \\
 For the final layout of the network several Inception modules are stacked
@@ -127,11 +127,11 @@ followed by fully connected layer with softmax for the classification.
 \subsubsection{by Dominique Cheray}
 Class Activation Mapping (CAM) is a technique to expose the implicit attention
 of Convolutional Neural Networks (CNN) on an image. It highlights the most
-informative regions relevant the predicted class \cite{zhou2016learning}. For a
+informative regions relevant to the predicted class \cite{zhou2016learning}. For a
 CNN to be used for CAM, its architecture must meet certain requirements. Its
 last convolutional layer has to be followed by a layer that performs global
 average pooling (GAP) on the convolutional feature maps. The output of the GAP
-is then used as features for a fully connected layer that produces the desired
+is then used as input for a fully connected layer that produces the desired
 output (categorical or otherwise). \\
 The GAP outputs the average of each feature map at the last convolutional layer
 and in the fully connected layer a weighted sum of these values is used to
@@ -157,14 +157,14 @@ The data set we use in our project is a subset of the MPII Human Pose Dataset
 \cite{andriluka20142d}. This data set is a state of the art benchmark for
 evaluation of articulated human pose estimation. It includes around
 25,000 images and covers 410 human activities. The activities cover a wide range
-and span from household activities and leisure activities to sports. Each image
+and span from household activities to sports. Each image
 of the data set was extracted from a YouTube video and is provided with an
-activity label. In addition the preceding and following unannotated frames are
-also provided. \\
+activity label. In addition the preceding and following unannotated frames of
+every image are also provided. \\
 For the purpose of this project we concentrate on the sports part of the
 data set. In order to keep our data set as large as possible and at the same
-time the classes balanced, we select the sports that contain the most
-pictures and a similar number of pictures. The remaining data set consists of
+time the classes as balanced as possible, we select the sports that contain the most
+pictures and have a similar number of pictures. The remaining data set consists of
 1576 images distributed over 10 classes. These classes are basketball, horseback
 riding, martial arts, paddleball, rock climbing, rope skipping, skateboarding,
 softball, tennis, golf. Figure \ref{plotgrid} gives a little insight into the
@@ -202,8 +202,8 @@ show that applying these two methods improved the performance of CNNs
 the most. We therefore first resize the training images to 256x256 pixels and
 then apply a random transformation to it (either a flip or a rotation).
 Afterwards we extract five 224x224 crops from the transformed image, one crop
-out of every corner of the image and one out of the center of the image. Later
-during training the prediction of the network is averaged over these five crops
+out of every corner of the image and one out of the center of the image. During
+training the prediction of the networks is averaged over these five crops
 to get one prediction for the underlying original image. \\
 We train the networks for 200 epochs using Stochastic Gradient Descent as
 optimizer with 0.9 momentum and a start learning rate of 0.01. Every 8 epochs
@@ -215,13 +215,13 @@ training using the validation set. The test set is left out of the whole
 training phase, to prevent overfitting and tuning on it. It is used for the
 final evaluation of the predictive accuracy of the networks. \\
 To get an idea of which image information the networks use for their
-predictions, we implement the Class Activation Mapping described in Chapter
+predictions, we implement the Class Activation Mapping described in chapter
 \ref{CAM} and apply it to both networks. Since the architectures of both
 networks already 
 meet the requirements of the CAM algorithm no changes had to be made to the
 networks. For both networks we extract the feature maps of the last
 convolutional layer and the weights of the linear layer that follows the GAP
-layer. Out of those weights we use the weights that belong to the most
+layer. Out of all those weights we use the weights that belong to the most
 likely class predicted by the networks for a given image. We then multiply each
 feature map of the convolutional layer with its associated weight. These
 weighted feature maps are then added up and the resulting class activation map
@@ -311,20 +311,21 @@ With 82.3\% accuracy GoogLeNet is slightly better than ResNet, which only
 reaches 76.1\% accuracy. \\
 Looking at the class activation mappings that were created for both networks from the images of the
 test dataset, it also shows that both networks provide similar results. Figure
-\ref{CAMImages} shows four examples of CAMs for both GoogLeNet and ResNet. On
-the two top class activation mappings one can see that both networks are more
+\ref{CAMImages} shows four examples of class activation maps for both GoogLeNet and ResNet. On
+the two top class activation maps one can see that both networks are more
 focused on the horse for the prediction of horseback riding and on the
 skateboard for the prediction of skateboarding. For the prediction of golf and
 paddleball however, both networks consider the background to be the most
-relevant image area to classify the images as shown in the two bottom class
-activation mappings for both networks. Overall, the analysis of the CAMs
-revealed that for many sports, the networks did not consider the athletes or the
+relevant image area to classify the images, as shown in the two bottom class
+activation mappings for both networks. Overall, the analysis of the class
+activation maps
+reveals that for many sports, the networks do not consider the athletes or the
 sports equipment as relevant image regions to classify the image. Rather, in
-many cases, the background was the most important image information for the two
+many cases, the background is the most important image information for the two
 networks to classify the images. For example when predicting golf as class the
-networks mainly looked at the the lawn or when predicting rock climbing they
-mainly looked at the surrounding rock face. Only for rope skipping, in almost
-all cases, was the athlete the part of the picture the networks focused on.
+networks mainly look at the the lawn or when predicting rock climbing they
+mainly focus on the surrounding rock face. Only for rope skipping, in almost
+all cases, is the athlete the part of the picture the networks focus on.
 
 \section{Temporal Analysis with SVM}
 \subsubsection{by Manuel Krämer}
@@ -361,25 +362,25 @@ balanced, the test accuracy of around 80\% of both networks appears a good
 result. However looking at the class activation mappings gives an entirely
 different image. Both networks focus mainly on the background to make their
 predictions. This is, to a large extent, certainly due to the fact that our
-dataset does not involve much variability. For example, if one looks at the
+data set does not involve much variability. For example, if one looks at the
 paddleball pictures (see figure \ref{plotgrid} row 4), one can see that they
 mostly take place in front of a gray wall, so the background is very similar in
 most cases. Or golf for example (see figure \ref{plotgrid} row 10), which always
 has a green lawn as background. The networks do not perform well, because they
 have, as one might expect, learned to differentiate the sports based on the
 sports equipment, but because in many cases the backgrounds of the respective
-sports are the same and they have learned to distinguish them and assign them.
+sports are the same and they have learned to distinguish them.
 The only exception is rope skipping, where the networks are actually mainly
 focused on the athlete. These are also the pictures where the backgrounds are
 the most different. \\
 To address this problem, one could use a larger data set, which has more
-variability, especially with regard to the background. However, that might prove
+variability, especially with regard to the background. However, this approach might prove
 difficult, as most sports always take place against a similar background. Golf
 on the lawn, tennis on a tennis court, rock climbing on a rock face et cetera.
 Another approach could therefore be to edit the images and remove or unify the
 backgrounds before training the neural networks with them. With missing
 background or the same background for all sports, the networks can no longer use
-this information to differentiate the different sports.
+this information to distinguish the different sports.
 
 \section{Temporal Analysis with SVM}
 \subsubsection{by Manuel Krämer}
