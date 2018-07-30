@@ -34,9 +34,9 @@ def prepareImage(path):
 
 #initialize the model and training data
 #CPU
-model_params = torch.load('175Epo.t7', map_location=lambda storage, loc: storage)
+model_params = torch.load('GoogLeNet.t7', map_location=lambda storage, loc: storage)
 #GPU
-#model_params = torch.load('175Epo.t7')
+#model_params = torch.load('GoogLeNet.t7.t7')
 
 model = GoogLeNet(10)
 model.load_state_dict(model_params['model'])
@@ -112,8 +112,8 @@ X_test = X[mask_test,:]
 Y_test = Y[mask_test]
 
 #Train the SVM
-clf = SVC(kernel='linear')
+clf = SVC(C = 1, kernel='linear', decision_function_shape='ovr')
 clf.fit(X_train, Y_train) 
 print("Training accuracy:", clf.score(X_train, Y_train))
 print("Test accuracy", clf.score(X_test, Y_test))
-        
+    
