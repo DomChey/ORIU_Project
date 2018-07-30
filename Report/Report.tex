@@ -23,6 +23,10 @@
 \tableofcontents
  
 \chapter{Introduction}
+\subsubsection{by Manuel Krämer}
+Classification is an important task in searching and summarization but most of the previous work doesn't include sports. Therefore, our main goal is to investigate the behaviour of different classfiers on images (static) and videos (temporal) of sport activities. \\
+Since neural networks can achieve a very good performance on images we choose the GoogLeNet (\cite{szegedy2015going}) and the ResNet \cite{he2016deep} architecture to train them on single images from the MPII Human Pose Dataset \cite{andriluka20142d}. To get a better understanding on how the networks work we implement the CAM algorithm \cite{zhou2016learning} that produces heat maps where one can see important regions of an image. We expect that e.g. the sports equipment is considered as more important by the network than the background. \\
+Finally we want to compare this static approach against a dynamic (temporal) approach which includes image sequences of a video. The MPII dataset provides a video for every single frame that is used in the static approach. We need to reduce the feature size in order to get viable data for classification. This is realized by processing the frames through the GoogLeNet until the last hidden layer and concatenating them as described in ch. \ref{TempAnalysis_SVM}. For the final classification a Support Vector Machine is used. We want to achieve an increasing performance for an increasing amount of temporal information (more frames).
 
 \chapter{Fundamentals}
 \section{GoogLeNet}
@@ -198,12 +202,13 @@ to get one prediction for the underlying original image. \\
 
 
 \section{Temporal Analysis with SVM}
+\label{TempAnalysis_SVM}
 \subsubsection{by Manuel Krämer}
 The approach we used to investigate the temporal information in image sequences (videos) and compare it to a static method like the single frame neural network classification is the following:
 
 \begin{enumerate} 
 \item Choose 3,5,7 or 9 successive frames of a video sequence with a spacing of 5 frames (Since the videos aren't that long; if we choose 9 frames we needed to decrease the spacing to 4)
-\item Process each single frame through the GoogLeNet and extract the features from the last hidden layer (which is a feature vector of size 1024)
+\item Process each single frame through the pretrained GoogLeNet and extract the features from the last hidden layer (which is a feature vector of size 1024)
 \item Concatenate all the feature vectors to a single image sequence feature vector
 \item Do the classification of these image sequence feature vectors with one of the ten labels (see ch. \ref{dataset}) with a SVM
 \end{enumerate}
@@ -220,15 +225,15 @@ The described algorithm is shown in fig. \ref{fig_svm}.
 The Classification with the SVM can be done with several possibilities as you can see in ch. \ref{SVM}. The best results were achieved by a linear SVM (linear kernel), a C-value of 1 and the "one-vs-rest" algorithm. 
 
 
-\chapter{Methods}
+\chapter{Results}
 \section{Classification with the Networks}
 \subsubsection{by Dominique Cheray}
 
 \section{Temporal Analysis with SVM}
 \subsubsection{by Manuel Krämer}
 Our results are shown in table \ref{result_table_SMV} and fig. \ref{result_fig_svm}.
-One can see that more temporal information (more frames) lead to an increasing accuracy in training. The testing dataset shows the same behaviour besides the fact that at 9 frames it is decreasing compared to 7 frames. \\
-
+One can see that more temporal information (more frames) lead to an increasing accuracy in training. The testing dataset showed the same behaviour besides the fact that at 9 frames it is decreasing compared to 7 frames and the effect is not as significant as one can see for the training.\\
+Compared to the static approach, the training accuracy is about the same but the testing accuracy is much worse.
 
 \begin{table}[]
 \centering
@@ -249,6 +254,17 @@ One can see that more temporal information (more frames) lead to an increasing a
   \caption{Accuracy of the SVM vs. number of images considered for classfication}
   \label{result_fig_svm}
 \end{figure}
+
+
+\chapter{Discussion}
+\section{Classification with the Networks}
+\subsubsection{by Dominique Cheray}
+
+\section{Temporal Analysis with SVM}
+\subsubsection{by Manuel Krämer}
+The behaviour of the training accuracy one can see in fig. \ref{result_fig_svm} is expected because more frames include more temporal information and this makes the classification more complex but also more accurate. The testing accuracy, indeed is not increasing as much as the training accuracy what means that our model is not generalizing very well. Moreover, there is a decrease from seven to nine frames in the test set due to cuts in some of the videos which leads to the fact that the feature vector contains frames that don't show any relevant information. \\
+One reason for the lack of generalization is our dataset which contains many similar frames from one class (e.g. nearly all golf images show green grass and the same distance from the camera to the golfer). Furthermore, the overall testing accuracy is much worse than the one from the static network approach because the SVM and the network are two separated models which means that the extracted features from the GoogLeNet are not optimal for a Support Vector Machine to classify. One solution to this problem would be that we don't use a SVM but another neural network which can be optimized simultaneously with the whole net.
+To sum this up, we can verify that more temporal information lead to a better classification performance but we are not able to outperform the neural network. Further work needs to be done in order to study a coupled approach of feature reduction and classification, e.g. a neural net that takes several images and produces a classification with a softmax or a Recurrent Neural Network (RNN) that is often used for video processing.
 
 
 \bibliography{literature}
