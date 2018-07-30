@@ -25,7 +25,13 @@
 \chapter{Introduction}
 \subsubsection{by Manuel Krämer}
 Classification is an important task in searching and summarization but most of the previous work doesn't include sports. Therefore, our main goal is to investigate the behaviour of different classfiers on images (static) and videos (temporal) of sport activities. \\
-Since neural networks can achieve a very good performance on images we choose the GoogLeNet (\cite{szegedy2015going}) and the ResNet \cite{he2016deep} architecture to train them on single images from the MPII Human Pose Dataset \cite{andriluka20142d}. To get a better understanding on how the networks work we implement the CAM algorithm \cite{zhou2016learning} that produces heat maps where one can see important regions of an image. We expect that e.g. the sports equipment is considered as more important by the network than the background. \\
+Since neural networks can achieve a very good performance on images we choose
+the GoogLeNet \cite{szegedy2015going} and the ResNet \cite{he2016deep}
+architecture to train them on single images from the MPII Human Pose Dataset
+\cite{andriluka20142d}. To get a better understanding on how the networks work
+we implement the CAM algorithm \cite{zhou2016learning} that produces heat maps
+where one can see which image regions are considered important by the neural
+network to make its prediction. We expect that e.g. the sports equipment is considered as more important by the network than the background. \\
 Finally we want to compare this static approach against a dynamic (temporal) approach which includes image sequences of a video. The MPII dataset provides a video for every single frame that is used in the static approach. We need to reduce the feature size in order to get viable data for classification. This is realized by processing the frames through the GoogLeNet until the last hidden layer and concatenating them as described in ch. \ref{TempAnalysis_SVM}. For the final classification a Support Vector Machine is used. We want to achieve an increasing performance for an increasing amount of temporal information (more frames).
 
 \chapter{Fundamentals}
