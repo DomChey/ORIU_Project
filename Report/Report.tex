@@ -356,6 +356,30 @@ Compared to the static approach, the training accuracy is about the same but the
 \chapter{Discussion}
 \section{Classification with the Networks}
 \subsubsection{by Dominique Cheray}
+Considering that our dataset is relatively small and the classes are not fully
+balanced, the test accuracy of around 80\% of both networks appears a good
+result. However looking at the class activation mappings gives an entirely
+different image. Both networks focus mainly on the background to make their
+predictions. This is, to a large extent, certainly due to the fact that our
+dataset does not involve much variability. For example, if one looks at the
+paddleball pictures (see figure \ref{plotgrid} row 4), one can see that they
+mostly take place in front of a gray wall, so the background is very similar in
+most cases. Or golf for example (see figure \ref{plotgrid} row 10), which always
+has a green lawn as background. The networks do not perform well, because they
+have, as one might expect, learned to differentiate the sports based on the
+sports equipment, but because in many cases the backgrounds of the respective
+sports are the same and they have learned to distinguish them and assign them.
+The only exception is rope skipping, where the networks are actually mainly
+focused on the athlete. These are also the pictures where the backgrounds are
+the most different. \\
+To address this problem, one could use a larger data set, which has more
+variability, especially with regard to the background. However, that might prove
+difficult, as most sports always take place against a similar background. Golf
+on the lawn, tennis on a tennis court, rock climbing on a rock face et cetera.
+Another approach could therefore be to edit the images and remove or unify the
+backgrounds before training the neural networks with them. With missing
+background or the same background for all sports, the networks can no longer use
+this information to differentiate the different sports.
 
 \section{Temporal Analysis with SVM}
 \subsubsection{by Manuel Krämer}
