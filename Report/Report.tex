@@ -186,6 +186,9 @@ Afterwards we extract five 224x224 crops from the transformed image, one crop
 out of every corner of the image and one out of the center of the image. Later
 during training the prediction of the network is averaged over these five crops
 to get one prediction for the underlying original image. \\
+We train the networks for 200 epochs using Stochastic Gradient Descent as
+optimizer with 0.9 momentum and a start learning rate of 0.01. Every 8 epochs
+the learning rate is decreased by 4\%. 
 
 
 \bibliography{literature}
