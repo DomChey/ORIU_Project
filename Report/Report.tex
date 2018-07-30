@@ -190,7 +190,7 @@ training set and keep the test set for the final testing of the performance
 of the networks. \\
 Due to the rather small size of our data set we use Data Augmentation to
 artificially inflate our data set and avoid overfitting of the networks on the
-training data. According to the results of \cite{taylor2017improving} we apply
+training data as much as possible. According to the results of \cite{taylor2017improving} we apply
 a combination of geometric augmentation and cropping since the authors could
 show that applying these two methods improved the performance of CNNs
 the most. We therefore first resize the training images to 256x256 pixels and
@@ -207,7 +207,7 @@ set. We then train the parameters of the networks using the remaining training
 images and the previously described Data Augmentation methods and validate the
 training using the validation set. The test set is left out of the whole
 training phase, to prevent overfitting and tuning on it. It is used for the
-final evaluation of the performance of the networks. \\
+final evaluation of the predictive accuracy of the networks. \\
 To get an idea of which image information the networks use for their
 predictions, we implement the Class Activation Mapping described in Chapter
 \ref{CAM} and apply it to both networks. Since the architectures of both
@@ -250,6 +250,75 @@ The Classification with the SVM can be done with several possibilities as you ca
 \chapter{Results}
 \section{Classification with the Networks}
 \subsubsection{by Dominique Cheray}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\textwidth]{AccuraciesGraph}
+  \caption{Classification Accuracy of GoogLeNet and ResNet for training and
+    validation.}
+  \label{resultGraphNets}
+\end{figure}
+
+\begin{table}[]
+  \centering
+  \begin{tabular}{|l|l|l|}
+    \hline
+    & GoogLeNet & ResNet \\ \hline
+    Testing Accuracy & 82.3\% & 76.1\% \\ \hline
+  \end{tabular}
+  \caption{Classification Accuracy of the networks on the test set.}
+  \label{resultTableNets}
+\end{table}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.1]{CAMsGoogLeNet}
+%        \subcaption{}
+%        \label{}
+    \end{subfigure}
+    \hfill %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.1]{CAMsResNet}
+%        \subcaption{}
+%        \label{}
+      \end{subfigure}
+      \caption{Left: Four CAM examples for GoogLeNet. Right: Four CAM examples
+        for ResNet}
+      \label{CAMImages}
+    \end{figure}
+
+Figure \ref{resultGraphNets} shows the classification accuracy of GoogLeNet and
+ResNet on the training and validation set during the 200 epochs of training.
+For the first 75 or so epochs the training
+and validation accuracies of both networks increase about equally fast.
+Thereafter the validation accuracies increase much more slowly, sometimes they
+even decrease for some epochs and then rise again. Overall both networks perform
+very well on the training set and reach accuracies of almost 100\% after the 200
+training epochs.
+ResNet is even slightly better than GoogLeNet. However on the validation set
+both networks only achieve an accuracy of about 80\%. Moreover, on this data
+set GoogLeNet is slightly outperforming ResNet. Regarding the test data, the
+results look similar to the validation set (see table \ref{resultTableNets}).
+With 82.3\% accuracy GoogLeNet is slightly better than ResNet, which only
+reaches 76.1\% accuracy. \\
+Looking at the class activation mappings that were created for both networks from the images of the
+test dataset, it also shows that both networks provide similar results. Figure
+\ref{CAMImages} shows four examples of CAMs for both GoogLeNet and ResNet. On
+the two top class activation mappings one can see that both networks are more
+focused on the horse for the prediction of horseback riding and on the
+skateboard for the prediction of skateboarding. For the prediction of golf and
+paddleball however, both networks consider the background to be the most
+relevant image area to classify the images as shown in the two bottom class
+activation mappings for both networks. Overall, the analysis of the CAMs
+revealed that for many sports, the networks did not consider the athletes or the
+sports equipment as relevant image regions to classify the image. Rather, in
+many cases, the background was the most important image information for the two
+networks to classify the images. For example when predicting golf as class the
+networks mainly looked at the the lawn or when predicting rock climbing they
+mainly looked at the surrounding rock face. Only for rope skipping, in almost
+all cases, was the athlete the part of the picture the networks focused on.
 
 \section{Temporal Analysis with SVM}
 \subsubsection{by Manuel Krämer}
